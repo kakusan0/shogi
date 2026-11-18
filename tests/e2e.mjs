@@ -73,6 +73,34 @@ for (const [label, ctxOpts] of [['PC', { viewport: { width: 1280, height: 860 } 
     assert((await kifu()).includes('△同　銀'), '再開');
   });
 
+  await step(`${label}：対局を動画で保存する`, async () => {
+    // 「つづきから」の 4 手の対局で、正方形・はやい・小さめを作る
+    await page.click('#video');
+    await page.getByRole('dialog', { name: '動画で保存' }).waitFor();
+    await page.getByText('正方形').click();
+    await page.getByText('はやい').click();
+    if (!(await page.locator('#video-small').isChecked())) await page.locator('#video-small').check();
+    await noOverflow();
+    await page.click('#video-make');
+    const save = page.locator('#video-save');
+    await save.waitFor({ timeout: 60000 });
+    const [dl] = await Promise.all([page.waitForEvent('download'), save.click()]);
+    const path = await dl.path();
+    const { readFileSync } = await import('node:fs');
+    const buf = readFileSync(path);
+    assert(buf.length > 2000, `動画が小さすぎる ${buf.length}`);
+    const webm = buf[0] === 0x1a && buf[1] === 0x45 && buf[2] === 0xdf && buf[3] === 0xa3;
+    const mp4 = buf.slice(4, 8).toString() === 'ftyp';
+    assert(webm || mp4, '動画の形式（WebM か MP4）');
+    assert(/^shogi-\d{4}-\d\d-\d\d-4te\.(webm|mp4)$/.test(dl.suggestedFilename()), `ファイル名 ${dl.suggestedFilename()}`);
+    // 縦長も作れる
+    await page.getByRole('button', { name: '作り直す' }).click();
+    await page.getByText('縦長 9:16').click();
+    await page.click('#video-make');
+    await page.locator('#video-save').waitFor({ timeout: 60000 });
+    await page.getByRole('button', { name: '閉じる' }).click();
+  });
+
   await step(`${label}：コンピューターと対局`, async () => {
     await title();
     await page.getByRole('button', { name: 'コンピューターと対局する' }).click();

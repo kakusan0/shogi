@@ -311,7 +311,16 @@ function renderKifu(s: Session): HTMLElement {
         h('button', { onclick: () => { s.view = i + 1 === g.record.length ? null : i + 1; render(); } }, `${i + 1}. ${r.name}${r.check ? '（王手）' : ''}`)))),
     h('div', { class: 'btns' },
       s.view != null ? h('button', { class: 'btn sm', onclick: () => { s.view = null; render(); } }, '最新の局面へ') : null,
-      h('button', { class: 'btn sm', onclick: () => { void navigator.clipboard?.writeText(g.kif(s.names)); s.message = '棋譜（KIF 形式）をコピーしました'; render(); } }, '棋譜をコピー')));
+      h('button', { class: 'btn sm', onclick: () => { void navigator.clipboard?.writeText(g.kif(s.names)); s.message = '棋譜（KIF 形式）をコピーしました'; render(); } }, '棋譜をコピー'),
+      h('button', { class: 'btn sm', id: 'video', disabled: !g.record.length, onclick: async () => {
+        // 動画の仕組みは押したときに読み込む（最初の表示を軽く）
+        const { openVideoDialog } = await import('./ui/video-dialog');
+        const mode = s.mode === 'cpu' ? `コンピューター対戦（${LEVEL_NAMES[s.level]}）` : s.mode === 'local' ? '二人で対戦' : s.mode === 'online' ? 'オンライン対戦' : s.tsume?.title ?? '';
+        openVideoDialog({
+          game: g, names: s.names, title: `${g.rules.name}・${mode}`, result: g.result ? resultText(g.result, g, s) : null,
+          flipped: s.flipped, viewPly: s.view,
+        });
+      } }, '動画で保存')));
 }
 
 // ---------- 詰将棋の一覧 ----------
