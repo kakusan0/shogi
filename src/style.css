@@ -109,3 +109,16 @@ h1, h2 { margin: 0; }
   .stand { min-height: 48px; }
 }
 .rules .rule-list { margin: 0; padding-left: 20px; line-height: 1.9; color: var(--sub); }
+
+/* オンライン */
+.online-entry, .online-wait { max-width: 560px; margin: 0 auto; padding: 16px 16px 56px; display: flex; flex-direction: column; gap: 14px; }
+.online-wait { margin-top: 16px; text-align: center; }
+.input { width: 100%; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.input.code { letter-spacing: .3em; text-transform: uppercase; font-weight: 800; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--sub); margin-bottom: 10px; }
+.online-entry .panel > .btn { margin-top: 8px; width: 100%; }
+.room-code { font-size: 40px; font-weight: 900; letter-spacing: .25em; margin: 12px 0; font-variant-numeric: tabular-nums; }
+.online-wait .btns { justify-content: center; }
+.error { color: #c0392b; font-weight: 700; }
+.clock { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 800; padding: 1px 8px; border-radius: 8px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.stand.turn .clock { background: var(--accent); color: #fff; }

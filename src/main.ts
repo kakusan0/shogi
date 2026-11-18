@@ -295,6 +295,7 @@ function renderGame(s: Session) {
           if (s.mode === 'online') { onlineGame?.resign(); return; }
           g.resign(s.mySide ?? g.pos.side); cancelThinking(); s.thinking = false; saveGame(); render();
         } }, '投了') : null,
+        s.mode === 'online' && g.result ? h('button', { class: 'btn primary', id: 'rematch', disabled: !!onlineGame?.state().rematch[s.mySide ?? 0], onclick: () => onlineGame?.rematch() }, 'もう一局') : null,
         h('button', { class: 'btn', onclick: () => { s.flipped = !s.flipped; render(); } }, '盤を回す'))),
     renderKifu(s));
   app.replaceChildren(h('div', { class: 'game' }, header(modeName), h('main', { class: 'layout' }, h('div', { class: 'main-col' }, renderBoard(view)), side)));
@@ -392,6 +393,8 @@ function onlineHandlers() {
     onUpdate: (o: OnlineSession) => {
       if (!session || session.mode !== 'online') return;
       const st = o.state();
+      if (st.you !== session.mySide) { session.mySide = st.you; session.flipped = st.you === 1; } // もう一局で先後が入れ替わった
+      if (st.game.record.length !== session.game.record.length) { session.selected = null; session.view = null; }
       session.game = st.game;
       session.names = st.names;
       session.message = st.message;

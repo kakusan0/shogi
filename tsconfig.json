@@ -10,5 +10,6 @@
     "skipLibCheck": true,
     "types": ["vitest/globals"]
   },
-  "include": ["src", "tests"]
+  "include": ["src", "tests"],
+  "exclude": ["src/worker/index.ts", "src/worker/room.ts", "src/worker/worker-configuration.d.ts"]
 }

@@ -1,0 +1,25 @@
+name: Check
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: 画面テスト用のブラウザを入れる
+        run: npx playwright install --with-deps chromium
+      - name: オンライン対戦の結合テスト（wrangler dev に何人かでつないで遊ぶ）
+        run: npm run test:online
+      - name: 画面テスト（ビルドしてブラウザで遊ぶ。オンライン対戦も）
+        run: npm run e2e
